@@ -18,7 +18,6 @@ export const homeSlice = createSlice({
   },
 });
 
-
 export const homeActions = homeSlice.actions;
 
 export default homeSlice.reducer;

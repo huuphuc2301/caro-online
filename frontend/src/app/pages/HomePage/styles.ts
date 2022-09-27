@@ -7,7 +7,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     height: '100vh',
   },
- 
 }));
 
 export default useStyles;
