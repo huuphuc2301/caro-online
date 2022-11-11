@@ -1,8 +1,14 @@
-import { DataTypes } from 'sequelize';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import sequelize from 'databases';
 import Nationality from './Nationality';
 
-const Director = sequelize.define(
+export interface DirectorModel extends Model<InferAttributes<DirectorModel>, InferCreationAttributes<DirectorModel>> {
+	id: CreationOptional<number>;
+	fullName: string;
+	birthDay: string;
+}
+
+const Director = sequelize.define<DirectorModel>(
 	'Director',
 	{
 		id: {
@@ -20,8 +26,8 @@ const Director = sequelize.define(
 		}
 	},
 	{
-        tableName: 'director',
-        timestamps: false,
+		tableName: 'director',
+		timestamps: false,
 		underscored: true
 	}
 );

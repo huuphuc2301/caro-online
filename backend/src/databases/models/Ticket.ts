@@ -1,8 +1,17 @@
-import { DataTypes } from 'sequelize';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import sequelize from 'databases';
 import User from './User';
 
-const Ticket = sequelize.define(
+export interface TicketModel extends Model<InferAttributes<TicketModel>, InferCreationAttributes<TicketModel>> {
+	id: CreationOptional<number>;
+	room: string;
+	seatRow: string;
+	seatColumn: string;
+	time: Date;
+	price: number;
+}
+
+const Ticket = sequelize.define<TicketModel>(
 	'Ticket',
 	{
 		id: {

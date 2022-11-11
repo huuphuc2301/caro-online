@@ -1,8 +1,15 @@
-import { DataTypes } from 'sequelize';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import sequelize from 'databases';
 import Showtime from './Showtime';
 
-const Seat = sequelize.define(
+export interface SeatModel extends Model<InferAttributes<SeatModel>, InferCreationAttributes<SeatModel>> {
+	id: CreationOptional<number>;
+	row: string;
+	column: string;
+	status: string;
+}
+
+const Seat = sequelize.define<SeatModel>(
 	'Seat',
 	{
 		id: {
@@ -20,7 +27,7 @@ const Seat = sequelize.define(
 			type: DataTypes.STRING
 		},
 		status: {
-			type: DataTypes.STRING
+			type: DataTypes.TINYINT
 		}
 	},
 	{

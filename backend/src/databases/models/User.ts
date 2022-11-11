@@ -7,11 +7,13 @@ import {
 	Model,
 	HasManyGetAssociationsMixin,
 	HasManyAddAssociationMixin,
-	HasManyAddAssociationsMixin
+	HasManyAddAssociationsMixin,
+	HasManyRemoveAssociationMixin,
+	HasManyRemoveAssociationsMixin,
+	NonAttribute
 } from 'sequelize';
 import sequelize from 'databases';
 import { RoleModel } from './Role';
-import RoleCode from 'constant/Role';
 export interface UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
 	// Some fields are optional when calling UserModel.create() or UserModel.build(	)
 	id: CreationOptional<number>;
@@ -19,9 +21,12 @@ export interface UserModel extends Model<InferAttributes<UserModel>, InferCreati
 	password: string;
 	fullName: string;
 	birthDay: Date;
+	Roles?: NonAttribute<RoleModel[]>;
 	getRoles: HasManyGetAssociationsMixin<RoleModel>;
 	addRole: HasManyAddAssociationMixin<RoleModel, number>;
-	addRoles: HasManyAddAssociationsMixin<RoleModel, number>;
+	addRoles: HasManyAddAssociationsMixin<RoleModel, number[]>;
+	removeRole: HasManyRemoveAssociationMixin<RoleModel, number>;
+	removeRoles: HasManyRemoveAssociationsMixin<RoleModel, number[]>;
 }
 
 const User = sequelize.define<UserModel>(
@@ -60,8 +65,10 @@ User.beforeCreate(user => {
 	user.password = hashedPassword;
 });
 
-User.afterCreate(async (user) => {
-	await user.addRole(RoleCode.Customer);
+User.beforeUpdate(user => {
+	console.log('update');
+	const hashedPassword = bcrypt.hashSync(user.password, 10);
+	user.password = hashedPassword;
 });
 
 export default User;

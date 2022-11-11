@@ -1,9 +1,8 @@
-import { RoleModel } from "databases/models/Role";
-
-type UserPayload = {
+interface UserPayload {
 	email: string;
 	password: string;
-	fullNname: string;
+	fullName: string;
 	birthDay: Date | null;
 };
+
 export default UserPayload;

@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { ApiResponse } from 'utils/rest/ApiResponse';
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import RoleCode from 'constant/Role';
+import RoleCodes from 'utils/constant/RoleCode';
+import ResponeCodes from 'utils/constant/ResponeCode';
 
 interface IToken {
 	userId: number;
@@ -14,30 +15,30 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 	const token = req.header('Authorization')?.replace('Bearer ', '');
 
 	if (!token) {
-		return new ApiResponse(null, 'No token provided!', 403).send(res);
+		return new ApiResponse(null, 'No token provided!', ResponeCodes.UNAUTHORIZED).send(res);
 	}
 
 	jwt.verify(token, config.secret_key, (err: Error, decoded: IToken) => {
 		if (err) {
-			return new ApiResponse(err, 'Unauthorized!', 401).send(res);
+			return new ApiResponse(err, 'Unauthorized!', ResponeCodes.UNAUTHORIZED).send(res);
 		}
-		req.body.user = decoded;
+		req.body.token = decoded;
 		next();
 	});
 };
 
 const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
-	const user: IToken = req.body.user;
-	if (!user || !user.roleIds.includes(RoleCode.Admin)) {
-		return new ApiResponse(null, 'Not permission!', 401).send(res);
+	const token: IToken = req.body.token;
+	if (!token || !token.roleIds.includes(RoleCodes.ADMIN)) {
+		return new ApiResponse(null, 'Not permission!', ResponeCodes.UNAUTHORIZED).send(res);
 	}
 	next();
 };
 
 const verifyCustomer = async (req: Request, res: Response, next: NextFunction) => {
-	const user: IToken = req.body.user;
-	if (!user || !user.roleIds.includes(RoleCode.Customer)) {
-		return new ApiResponse(null, 'Not permission!', 401).send(res);
+	const token: IToken = req.body.token;
+	if (!token || !token.roleIds.includes(RoleCodes.CUSTOMER)) {
+		return new ApiResponse(null, 'Not permission!', ResponeCodes.UNAUTHORIZED).send(res);
 	}
 	next();
 };

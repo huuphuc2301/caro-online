@@ -1,7 +1,14 @@
-import { DataTypes } from 'sequelize';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import sequelize from 'databases';
 
-const Price = sequelize.define(
+export interface PriceModel extends Model<InferAttributes<PriceModel>, InferCreationAttributes<PriceModel>> {
+	id: CreationOptional<number>;
+	visionType: number;
+	dayCode: string;
+	value: number;
+}
+
+const Price = sequelize.define<PriceModel>(
 	'Price',
 	{
 		id: {

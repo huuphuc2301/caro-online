@@ -1,7 +1,6 @@
 import User from './User';
 import Role from './Role';
 import UserRole from './UserRole';
-import Rated from './Rated';
 import Nationality from './Nationality';
 import Film from './Film';
 import Category from './Category';
@@ -20,7 +19,6 @@ export {
 	User,
 	Role,
 	UserRole,
-	Rated,
 	Film,
 	Category,
 	FilmCategory,

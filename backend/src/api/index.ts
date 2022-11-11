@@ -5,7 +5,7 @@ import registerRouter from './register';
 
 const router = Router();
 
-router.use('/user', userRouter);
+router.use('/users', userRouter);
 router.use('/login', loginRouter);
 router.use('/register', registerRouter);
 

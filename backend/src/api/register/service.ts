@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { User } from 'databases/models';
-import RegisterPayLoad from './RegisterPayLoad';
-import RoleCode from 'constant/Role';
 import config from 'config';
-import { UserModel } from 'databases/models/User';
+import RegisterPayLoad from './RegisterPayLoad';
+import { User } from 'databases/models';
+import { UserModel } from 'databases/models/IModel';
+import RoleCodes from 'utils/constant/RoleCode';
+import ResponeCodes from 'utils/constant/ResponeCode';
 
 interface RegisterResponse {
 	user: UserModel;
@@ -15,10 +16,22 @@ const register = async (newUser: RegisterPayLoad) => {
 	let message: string;
 	let status: number;
 
-	try {
-		const user = await User.create(newUser);
-		const roles = await user.getRoles();
-		const roleIds =  roles.map((role) => role.id);
+	const { email, password, fullName, birthDay } = newUser;
+	const [user, created] = await User.findOrCreate({
+		where: {
+			email
+		},
+		defaults: {
+			password,
+			fullName,
+			birthDay
+		}
+	});
+
+	if (created) {
+		await user.addRole(RoleCodes.CUSTOMER);
+		// const roles = await user.getRoles();
+		const roleIds = [RoleCodes.CUSTOMER];
 
 		const token = jwt.sign({ userId: user.id, roleIds }, config.secret_key, {
 			expiresIn: config.expires_in
@@ -29,11 +42,11 @@ const register = async (newUser: RegisterPayLoad) => {
 			token
 		};
 		message = 'Register successfully!';
-		status = 200;
-	} catch (error) {
+		status = ResponeCodes.CREATED;
+	} else {
 		data = null;
 		message = 'Email exists!';
-		status = 401;
+		status = ResponeCodes.BAD_REQUEST;
 	}
 
 	return {

@@ -1,8 +1,14 @@
-import { DataTypes } from 'sequelize';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import sequelize from 'databases';
 import Nationality from './Nationality';
 
-const Actor = sequelize.define(
+export interface ActorModel extends Model<InferAttributes<ActorModel>, InferCreationAttributes<ActorModel>> {
+	id: CreationOptional<number>;
+	fullName: string;
+	birthDay: string;
+}
+
+const Actor = sequelize.define<ActorModel>(
 	'Actor',
 	{
 		id: {
