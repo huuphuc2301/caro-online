@@ -21,11 +21,12 @@ const useStyles = makeStyles(() => ({
   },
 
   adminContent: {
-    display: 'flex',
-    minHeight: '100%',
-    marginTop: '1%',
-    justifyContent: 'center',
-    textAlign: 'center',
+    // display: 'flex',
+    // minHeight: '100%',
+    // marginTop: '1%',
+    // justifyContent: 'center',
+    // textAlign: 'center',
+    marginLeft: '20px',
   },
 }));
 

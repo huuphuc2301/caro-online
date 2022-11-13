@@ -7,6 +7,7 @@ import CustomerManagementPage from '../CustomerManagementPage';
 import RoomManagementPage from '../RoomManagementPage';
 import TicketManagementPage from '../TicketManagementPage';
 import paths from 'paths';
+import PriceManagementPage from '../PriceManagement';
 
 export default function AdminPage() {
   const classes = useStyles();
@@ -34,6 +35,11 @@ export default function AdminPage() {
           <Route
             path={paths.TicketManagement}
             component={TicketManagementPage}
+            exact={true}
+          />
+          <Route
+            path={paths.PriceManagement}
+            component={PriceManagementPage}
             exact={true}
           />
         </Switch>

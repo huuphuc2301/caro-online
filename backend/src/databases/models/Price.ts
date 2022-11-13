@@ -20,7 +20,7 @@ const Price = sequelize.define<PriceModel>(
 		},
 		visionType: {
 			allowNull: false,
-			type: DataTypes.INTEGER
+			type: DataTypes.STRING
 		},
 		dayCode: {
 			allowNull: false,

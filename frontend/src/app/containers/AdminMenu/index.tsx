@@ -18,24 +18,33 @@ function AdminMenu(props: { className: string }) {
   useLayoutEffect(() => {
     setPathname(location.pathname);
     switch (location.pathname) {
-      case paths.CustomerManagement: setTab(0)
+      case paths.CustomerManagement:
+        setTab(0);
         break;
-      case paths.RoomManagement: setTab(1)
+      case paths.RoomManagement:
+        setTab(1);
         break;
-      case paths.FilmManagement: setTab(2)
+      case paths.FilmManagement:
+        setTab(2);
         break;
-      case paths.TicketManagement: setTab(3)
+      case paths.TicketManagement:
+        setTab(3);
         break;
-      default: setTab(-1)
+      case paths.PriceManagement:
+        setTab(4);
+        break;
+      default:
+        setTab(0);
         break;
     }
   }, [location]);
 
   return (
     <Container className={props.className}>
-      <Tabs value={tab === -1 ? false : tab}
+      <Tabs
+        value={tab === -1 ? false : tab}
         orientation={'vertical'}
-        textColor='inherit'
+        textColor="inherit"
       >
         <Tab
           className={tab === 0 ? classes.activeTab : classes.tab}
@@ -58,8 +67,14 @@ function AdminMenu(props: { className: string }) {
         <Tab
           className={tab === 3 ? classes.activeTab : classes.tab}
           component={Link}
-          label="Vé"
+          label="Lịch sử đặt vé"
           to={paths.TicketManagement}
+        />
+        <Tab
+          className={tab === 4 ? classes.activeTab : classes.tab}
+          component={Link}
+          label="Giá vé"
+          to={paths.PriceManagement}
         />
       </Tabs>
     </Container>
