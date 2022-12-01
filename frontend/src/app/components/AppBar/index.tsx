@@ -220,8 +220,7 @@ export default function AppBar() {
           role={undefined}
           placement="bottom-start"
           transition
-          disablePortal
-        >
+          disablePortal onResize={undefined} onResizeCapture={undefined}        >
           {({ TransitionProps, placement }) => (
             <Grow
               {...TransitionProps}
