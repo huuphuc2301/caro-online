@@ -9,6 +9,7 @@ import categoryRouter from './category';
 import filmRouter from './film';
 import bannerRouter from './banner';
 import roomRouter from './room';
+import showtimeRouter from './showtime';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/categories', categoryRouter);
 router.use('/films', filmRouter);
 router.use('/banners', bannerRouter);
 router.use('/rooms', roomRouter);
+router.use('/showtimes', showtimeRouter);
 
 export default router;

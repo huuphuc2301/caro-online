@@ -1,15 +1,15 @@
 import { Request } from 'express';
-import { Room } from 'databases/models';
+import { Showtime, Room, Film } from 'databases/models';
 import ResponeCodes from 'utils/constant/ResponeCode';
-import RoomPayload from './RoomPayload';
+import ShowtimePayload from './ShowtimePayload';
 
-const getRooms = async (req: Request) => {
+const getShowtimes = async (req: Request) => {
 	try {
 		let data;
 		let message: string;
 		let status: number;
 
-		data = await Room.findAll();
+		data = await Showtime.findAll();
 		message = 'Get all successfully!';
 		status = ResponeCodes.OK;
 
@@ -23,7 +23,7 @@ const getRooms = async (req: Request) => {
 	}
 };
 
-const getRoomById = async (req: Request) => {
+const getShowtimeById = async (req: Request) => {
 	try {
 		let data;
 		let message: string;
@@ -36,13 +36,13 @@ const getRoomById = async (req: Request) => {
 			message = 'Invalid identifier.';
 			status = ResponeCodes.BAD_REQUEST;
 		} else {
-			const room = await Room.findByPk(id);
-			if (!room) {
+			const showtime = await Showtime.findByPk(id);
+			if (!showtime) {
 				data = null;
 				message = 'Not found.';
 				status = ResponeCodes.NOT_FOUND;
 			} else {
-				data = room;
+				data = showtime;
 				message = 'Get successfully!';
 				status = ResponeCodes.OK;
 			}
@@ -58,22 +58,46 @@ const getRoomById = async (req: Request) => {
 	}
 };
 
-const addRoom = async (req: Request) => {
+const getTimeDiff = (checkTime: Date, startTime: Date) => {
+	return Math.abs(startTime.getTime() - checkTime.getTime()) / (60 * 1000);
+};
+
+const addShowtime = async (req: Request) => {
 	try {
 		let data;
 		let message: string;
 		let status: number;
 
-		const newRoom: RoomPayload = req.body;
+		const newShowtime: ShowtimePayload = req.body;
+		const { film, room } = newShowtime;
 
-		if (!newRoom.name) {
+		if (!newShowtime.startTime || !film || !room) {
 			data = null;
-			message = 'Name null.';
+			message = 'Null.';
 			status = ResponeCodes.BAD_REQUEST;
 		} else {
-			const room = await Room.create(newRoom);
+			const startTime = new Date(newShowtime.startTime);
+			const checkShowtimes = await Showtime.findAll({
+				include: [
+					{
+						model: Room,
+						where: {
+							id: room
+						}
+					},
+					{
+						model: Film
+					}
+				]
+				// order: [[Film, 'duration', 'ASC']],
+				// limit: 2
+			});
 
-			data = room;
+			const showtime = await Showtime.create({ ...newShowtime, startTime });
+			if (film) await showtime.setFilm(film);
+			if (room) await showtime.setRoom(room);
+
+			data = showtime;
 			message = 'Add successfully!';
 			status = ResponeCodes.CREATED;
 		}
@@ -88,7 +112,7 @@ const addRoom = async (req: Request) => {
 	}
 };
 
-const updateRoom = async (req: Request) => {
+const updateShowtime = async (req: Request) => {
 	try {
 		let data;
 		let message: string;
@@ -101,9 +125,9 @@ const updateRoom = async (req: Request) => {
 			message = 'Invalid identifier.';
 			status = ResponeCodes.BAD_REQUEST;
 		} else {
-			const updateRoom: RoomPayload = req.body;
+			const updateShowtime: ShowtimePayload = req.body;
 
-			data = await Room.update(updateRoom, {
+			data = await Showtime.update(updateShowtime, {
 				where: {
 					id
 				}
@@ -122,7 +146,7 @@ const updateRoom = async (req: Request) => {
 	}
 };
 
-const deleteRoom = async (req: Request) => {
+const deleteShowtime = async (req: Request) => {
 	try {
 		let data;
 		let message: string;
@@ -135,7 +159,7 @@ const deleteRoom = async (req: Request) => {
 			message = 'Invalid identifier.';
 			status = ResponeCodes.BAD_REQUEST;
 		} else {
-			data = await Room.destroy({
+			data = await Showtime.destroy({
 				where: {
 					id
 				}
@@ -154,4 +178,4 @@ const deleteRoom = async (req: Request) => {
 	}
 };
 
-export { getRooms, getRoomById, addRoom, updateRoom, deleteRoom };
+export { getShowtimes, getShowtimeById, addShowtime, updateShowtime, deleteShowtime };
