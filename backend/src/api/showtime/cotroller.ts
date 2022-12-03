@@ -13,6 +13,22 @@ const getShowtimes = async (req: Request, res: Response) => {
 	}
 };
 
+const getAllShowtimes = async (req: Request, res: Response) => {
+	try {
+		const filmId = parseInt(req.query.film as string);
+		let result;
+		if (isNaN(filmId)) {
+			result = await service.getAllShowtimes(req);
+		} else {
+			result = await service.getShowtimesByFilm(filmId);
+		}
+		const { data, message, status } = result;
+		return new ApiResponse(data, message, status).send(res);
+	} catch (error) {
+		return new ApiResponse(error.message, "Couldn't get showtime.", ResponeCodes.ERROR).send(res);
+	}
+};
+
 const getShowtime = async (req: Request, res: Response) => {
 	try {
 		const result = await service.getShowtimeById(req);
@@ -53,4 +69,4 @@ const deleteShowtime = async (req: Request, res: Response) => {
 	}
 };
 
-export { getShowtimes, getShowtime, addShowtime, updateShowtime, deleteShowtime };
+export { getShowtimes, getAllShowtimes, getShowtime, addShowtime, updateShowtime, deleteShowtime };

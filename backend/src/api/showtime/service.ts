@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Showtime, Room, Film } from 'databases/models';
+import { Showtime, Room, Film, Seat } from 'databases/models';
 import ResponeCodes from 'utils/constant/ResponeCode';
 import ShowtimePayload from './ShowtimePayload';
 
@@ -11,6 +11,60 @@ const getShowtimes = async (req: Request) => {
 
 		data = await Showtime.findAll();
 		message = 'Get all successfully!';
+		status = ResponeCodes.OK;
+
+		return {
+			data,
+			message,
+			status
+		};
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getAllShowtimes = async (req: Request) => {
+	try {
+		let data;
+		let message: string;
+		let status: number;
+
+		const showtime = await Showtime.findAll();
+
+		data = showtime;
+		message = 'Get successfully!';
+		status = ResponeCodes.OK;
+
+		return {
+			data,
+			message,
+			status
+		};
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getShowtimesByFilm = async (filmId: number) => {
+	try {
+		let data;
+		let message: string;
+		let status: number;
+
+		const showtime = await Showtime.findAll({
+			include: [
+				{
+					model: Film,
+					attributes: [],
+					where: {
+						id: filmId
+					}
+				}
+			]
+		});
+
+		data = showtime;
+		message = 'Get successfully!';
 		status = ResponeCodes.OK;
 
 		return {
@@ -36,7 +90,11 @@ const getShowtimeById = async (req: Request) => {
 			message = 'Invalid identifier.';
 			status = ResponeCodes.BAD_REQUEST;
 		} else {
-			const showtime = await Showtime.findByPk(id);
+			const showtime = await Showtime.findByPk(id, {
+				include: {
+					model: Seat
+				}
+			});
 			if (!showtime) {
 				data = null;
 				message = 'Not found.';
@@ -58,8 +116,8 @@ const getShowtimeById = async (req: Request) => {
 	}
 };
 
-const getTimeDiff = (checkTime: Date, startTime: Date) => {
-	return Math.abs(startTime.getTime() - checkTime.getTime()) / (60 * 1000);
+const checkDiffTime = (checkTime: Date, startTime: Date) => {
+	return checkTime > startTime;
 };
 
 const addShowtime = async (req: Request) => {
@@ -76,30 +134,48 @@ const addShowtime = async (req: Request) => {
 			message = 'Null.';
 			status = ResponeCodes.BAD_REQUEST;
 		} else {
-			const startTime = new Date(newShowtime.startTime);
+			const curStartTime = new Date(newShowtime.startTime);
+			const curFilm = await Film.findByPk(film);
+			const curRoom = room;
+
 			const checkShowtimes = await Showtime.findAll({
 				include: [
 					{
 						model: Room,
+						attributes: [],
 						where: {
-							id: room
+							id: curRoom
 						}
 					},
 					{
 						model: Film
 					}
 				]
-				// order: [[Film, 'duration', 'ASC']],
-				// limit: 2
 			});
 
-			const showtime = await Showtime.create({ ...newShowtime, startTime });
-			if (film) await showtime.setFilm(film);
-			if (room) await showtime.setRoom(room);
+			const checkResult = checkShowtimes.filter(checkSt => {
+				if (checkSt.startTime <= curStartTime) {
+					const checkTime = new Date(checkSt.startTime.getTime() + (checkSt.Film.duration + 30) * 60 * 1000);
+					return checkDiffTime(checkTime, curStartTime);
+				} else {
+					const checkTime = new Date(curStartTime.getTime() + (curFilm.duration + 30) * 60 * 1000);
+					return checkDiffTime(checkTime, checkSt.startTime);
+				}
+			});
 
-			data = showtime;
-			message = 'Add successfully!';
-			status = ResponeCodes.CREATED;
+			if (checkResult.length === 0) {
+				const showtime = await Showtime.create(newShowtime);
+				if (film) await showtime.setFilm(film);
+				if (room) await showtime.setRoom(room);
+
+				data = showtime;
+				message = 'Add successfully!';
+				status = ResponeCodes.CREATED;
+			} else {
+				data = null;
+				message = 'Conflict showtime';
+				status = ResponeCodes.OK;
+			}
 		}
 
 		return {
@@ -178,4 +254,12 @@ const deleteShowtime = async (req: Request) => {
 	}
 };
 
-export { getShowtimes, getShowtimeById, addShowtime, updateShowtime, deleteShowtime };
+export {
+	getShowtimes,
+	getShowtimeById,
+	getShowtimesByFilm,
+	getAllShowtimes,
+	addShowtime,
+	updateShowtime,
+	deleteShowtime
+};

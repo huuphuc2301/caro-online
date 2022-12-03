@@ -44,7 +44,7 @@ const Seat = sequelize.define<SeatModel>(
 	}
 );
 
-Showtime.hasOne(Seat);
+Showtime.hasMany(Seat);
 Seat.belongsTo(Showtime);
 
 export default Seat;
