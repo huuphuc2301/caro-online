@@ -9,7 +9,7 @@ export const formatHour = (date: Date) => {
   return hours + ':' + minutes;
 };
 
-const Dayof = (day: number) => {
+export const Dayof = (day: number) => {
   switch (day) {
     case 0:
       return 'Chủ nhật';

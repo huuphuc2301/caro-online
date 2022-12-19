@@ -30,6 +30,7 @@ import { useGetCategories } from 'queries/categories';
 import { useGetAllRooms, useGetRooms, useUpdateRoom } from 'queries/rooms';
 import { notify } from 'app/components/MasterDialog';
 import { useUpdatePrice } from 'queries/prices';
+import { formatDate, formatHour, Dayof } from 'utils/date';
 export default function UpdatePriceDialog(props: any) {
   const classes = useStyles();
 
@@ -104,6 +105,10 @@ export default function UpdatePriceDialog(props: any) {
       update.remove();
     }
   });
+  function Dayof(dayCode: any) {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <Dialog
       open={props.open}
@@ -127,10 +132,10 @@ export default function UpdatePriceDialog(props: any) {
           <Grid xs={12} spacing={3} item={true} container>
             <Grid xs={6} item={true}>
               <CustomInput.TextField
-                label="Thời gian"
+                label="Ngày"
                 name="dayCode"
                 disabled
-                value={values?.dayCode}
+                value={Dayof(values?.dayCode)}
               />
             </Grid>
             <Grid xs={6} item={true}>
